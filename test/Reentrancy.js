@@ -1,4 +1,5 @@
 const { expect } = require("chai");
+const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
 describe("Reentrancy tests", function () {
@@ -45,9 +46,13 @@ describe("Reentrancy tests", function () {
     storeInstance.connect(accounts[2]).deposit({value: ethers.utils.parseEther("1.0")});
 
     console.log('Before:');
-    console.log(await reentrancy.getThisBalance());
-    console.log(await storeInstance.getThisBalance(), "\n");
-    await reentrancy.attack({value: ethers.utils.parseEther("1.0")});
+    console.log(await reentrancy.getThisBalance() / 10**18);
+    console.log(await storeInstance.getThisBalance() / 10**18, "\n");
+    const _1eth = ethers.utils.parseEther("1.0");
+    // console.log(_1eth);
+    // const _10wei = BigNumber.from("10");
+    // console.log(_10wei);
+    await reentrancy.attack({value: _1eth});
     console.log('After:');
     console.log(await reentrancy.getThisBalance());
     console.log(await storeInstance.getThisBalance());

