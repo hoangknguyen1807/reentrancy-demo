@@ -2,10 +2,10 @@
 pragma solidity ^0.8.4;
 
 import "./TokenStore.sol";
-import "./IReceiver.sol";
+import "./IHasBalance.sol";
 import "hardhat/console.sol";
 
-contract Reentrancy is IReceiver {
+contract Reentrancy is IHasBalance {
   TokenStore public tokenStore;
 
   uint256 private _count;

@@ -2,10 +2,11 @@
 pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
-import "./IReceiver.sol";
+import "./IHasBalance.sol";
+import "./MyReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract TokenStore is IReceiver {
+contract TokenStore is IHasBalance, MyReentrancyGuard {
   mapping(address => uint256) private _balances;
 
   function deposit() external payable {
@@ -13,13 +14,13 @@ contract TokenStore is IReceiver {
     _balances[msg.sender] += msg.value;
   }
 
-  function withdraw(uint256 _amount) external payable {
+  function withdraw(uint256 _amount) external payable nonReentrant {
     require(_balances[msg.sender] >= _amount);
 
     console.log("Store balance before:", getThisBalance() / 10**18);
     console.log("Caller balance before:", msg.sender.balance / 10**18);
     
-    (bool sent,) = msg.sender.call{value: _amount}("");
+    (bool sent, bytes memory data) = msg.sender.call{value: _amount}("");
 
     if (!sent) {
       console.log("*** sent == false ***");
@@ -28,9 +29,9 @@ contract TokenStore is IReceiver {
     }
     require(sent, "Sending ether failed!");
 
-    console.log("Caller balance before subtract:", _balances[msg.sender] / 10**18);
+    console.log("Caller _balance before subtract:", _balances[msg.sender] / 10**18);
     _balances[msg.sender] -= _amount;
-    console.log("Caller balance after subtract:", _balances[msg.sender] / 10**18, "\n\n");
+    console.log("Caller _balance after subtract:", _balances[msg.sender] / 10**18, "\n\n");
   }
 
   function getAccountBalance(address _account) public view returns (uint256) {
